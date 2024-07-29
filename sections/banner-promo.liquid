@@ -1,9 +1,13 @@
 <!-- banner-promo section -->
 
-<div data-banner-promo data-discount-code={{ section.settings.logic_discount_code }} data-utm-medium="{{ section.settings.logic_utm_medium }}" class="absolute w-full bg-[{{ section.settings.background_color }}] text-[{{ section.settings.text_color }}]">
-  <div class="container mx-auto p-4 flex justify-between right">
+<div
+  data-banner-promo
+  data-discount-code="{{ section.settings.logic_discount_code }}"
+  data-utm-medium="{{ section.settings.logic_utm_medium }}"
+  class="absolute w-full bg-[{{ section.settings.background_color }}] text-[{{ section.settings.text_color }}]">
+  <div class="container mx-auto p-4 flex {{ section.settings.message_text_alignment }}">
     <span data-success-text="{{ section.settings.success_text }}">{{ section.settings.message_text }}</span>
-    <button class="button">{{ section.settings.button_text }}</button>
+    <button data-close class="pl-4">{{ section.settings.button_text }}</button>
   </div>
 </div>
 
@@ -56,19 +60,19 @@
         "label": "Message text alignment",
         "options": [
           {
-            "value": "left",
+            "value": "justify-between",
             "label": "Left"
           },
           {
-            "value": "center",
+            "value": "justify-center",
             "label": "Center"
           },
           {
-            "value": "right",
+            "value": "justify-end",
             "label": "Right"
           }
         ],
-        "default": "left"
+        "default": "justify-between"
       },
       {
         "type": "header",
