@@ -1,0 +1,86 @@
+<div data-banner-promo>
+    <span>{{ section.settings.message_text }}</span>
+    <button>close</button>
+</div>
+
+{% schema %}
+  {
+    "name": "Banner promo",
+    "tag": "section",
+    "settings": [
+      {
+        "type": "header",
+        "content": "Banner styling"
+      },
+      {
+        "type": "color",
+        "id": "background_color",
+        "label": "Background color",
+        "default": "#2f73da"
+      },
+      {
+        "type": "color",
+        "id": "text_color",
+        "label": "Text color",
+        "default": "#ffffff"
+      },
+      {
+        "type": "header",
+        "content": "Banner content"
+      },
+      {
+        "type": "text",
+        "id": "message_text",
+        "label": "Message text",
+        "default": "Get your 15% off with code GIVEMEAJOB"
+      },
+      {
+        "type": "text",
+        "id": "success_text",
+        "label": "Success text",
+        "default": "Your 15% off discount code GIVEMEAJOB will auto-apply at checkout."
+      },
+      {
+        "type": "select",
+        "id": "message_text_alignment",
+        "label": "Message text alignment",
+        "options": [
+          {
+            "value": "left",
+            "label": "Left"
+          },
+          {
+            "value": "center",
+            "label": "Center"
+          },
+          {
+            "value": "right",
+            "label": "Right"
+          }
+        ],
+        "default": "left"
+      },
+      {
+        "type": "header",
+        "content": "Banner logic"
+      },
+      {
+        "type": "text",
+        "id": "logic_utm_medium",
+        "label": "UTM medium",
+        "default": "social"
+      },
+      {
+        "type": "text",
+        "id": "logic_discount_code",
+        "label": "Discount code",
+        "default": "GIVEMEAJOB"
+      }
+    ],
+    "presets": [
+      {
+        "name": "Banner promo"
+      }
+    ]
+  }
+{% endschema %}
