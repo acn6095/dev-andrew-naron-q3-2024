@@ -27,21 +27,24 @@
       parentBanner.classList.add('-top-full')
       })
     })
+
  {% endjavascript %}
 
 {% comment %} Section styling {% endcomment %}
 
-<div
-  data-banner-promo
-  data-discount-code="{{ section.settings.logic_discount_code }}"
-  data-utm-medium="{{ section.settings.logic_utm_medium }}"
-  class="absolute w-full bg-[{{ section.settings.background_color }}] text-[{{ section.settings.text_color }}] transition-all duration-700 ease-in-out -top-full"
->
-  <div class="container mx-auto p-4 flex {{ section.settings.message_text_alignment }}">
-    <span>{{ section.settings.message_text }}</span>
-    <button data-close class="px-4">{{ section.settings.button_text }}</button>
+{% for block in section.blocks %}
+  <div
+    data-banner-promo
+    data-discount-code="{{ block.settings.logic_discount_code }}"
+    data-utm-medium="{{ block.settings.logic_utm_medium }}"
+    class="absolute w-full bg-[{{ block.settings.background_color }}] text-[{{ block.settings.text_color }}] transition-all duration-700 ease-in-out -top-full"
+  >
+    <div class="container mx-auto p-4 flex {{ block.settings.message_text_alignment }}">
+      <span>{{ block.settings.message_text }}</span>
+      <button data-close class="px-4">{{ block.settings.button_text }}</button>
+    </div>
   </div>
-</div>
+{% endfor %}
 
 {% schema %}
   {
@@ -50,77 +53,101 @@
     "settings": [
       {
         "type": "header",
-        "content": "Banner styling"
-      },
+        "content": "Banner promos",
+        "info": "Use blocks to populate banner promos."
+      }
+    ],
+    "blocks": [
       {
-        "type": "color",
-        "id": "background_color",
-        "label": "Background color",
-        "default": "#2f73da"
-      },
-      {
-        "type": "color",
-        "id": "text_color",
-        "label": "Text color",
-        "default": "#ffffff"
-      },
-      {
-        "type": "header",
-        "content": "Banner content"
-      },
-      {
-        "type": "inline_richtext",
-        "id": "message_text",
-        "label": "Message text",
-        "default": "Your 15% off discount code GIVEMEAJOB will auto-apply at checkout."
-      },
-      {
-        "type": "text",
-        "id": "button_text",
-        "label": "Button text",
-        "default": "close"
-      },
-      {
-        "type": "select",
-        "id": "message_text_alignment",
-        "label": "Message text alignment",
-        "options": [
+        "name": "Promo",
+        "type": "promo",
+        "settings": [
           {
-            "value": "justify-between",
-            "label": "Left"
+            "type": "header",
+            "content": "Banner styling"
           },
           {
-            "value": "justify-center",
-            "label": "Center"
+            "type": "color",
+            "id": "background_color",
+            "label": "Background color",
+            "default": "#2f73da"
           },
           {
-            "value": "justify-end",
-            "label": "Right"
+            "type": "color",
+            "id": "text_color",
+            "label": "Text color",
+            "default": "#ffffff"
+          },
+          {
+            "type": "header",
+            "content": "Banner content"
+          },
+          {
+            "type": "inline_richtext",
+            "id": "message_text",
+            "label": "Message text",
+            "default": "Your 15% off discount code GIVEMEAJOB will auto-apply at checkout."
+          },
+          {
+            "type": "text",
+            "id": "button_text",
+            "label": "Button text",
+            "default": "close"
+          },
+          {
+            "type": "select",
+            "id": "message_text_alignment",
+            "label": "Message text alignment",
+            "options": [
+              {
+                "value": "justify-between",
+                "label": "Left"
+              },
+              {
+                "value": "justify-center",
+                "label": "Center"
+              },
+              {
+                "value": "justify-end",
+                "label": "Right"
+              }
+            ],
+            "default": "justify-between"
+          },
+          {
+            "type": "header",
+            "content": "Banner logic",
+            "info": "Set url parameters to trigger banner promo appearance"
+          },
+          {
+            "type": "text",
+            "id": "logic_utm_medium",
+            "label": "UTM medium",
+            "default": "social"
+          },
+          {
+            "type": "text",
+            "id": "logic_discount_code",
+            "label": "Discount code",
+            "default": "GIVEMEAJOB"
           }
-        ],
-        "default": "justify-between"
-      },
-      {
-        "type": "header",
-        "content": "Banner logic",
-        "info": "Set url parameters to trigger banner promo appearance"
-      },
-      {
-        "type": "text",
-        "id": "logic_utm_medium",
-        "label": "UTM medium",
-        "default": "social"
-      },
-      {
-        "type": "text",
-        "id": "logic_discount_code",
-        "label": "Discount code",
-        "default": "GIVEMEAJOB"
+        ]
       }
     ],
     "presets": [
       {
-        "name": "Banner promo"
+        "name": "Banner promo",
+        "blocks": [
+          {
+            "type": "promo",
+          },
+          {
+            "type": "promo",
+          },
+          {
+            "type": "promo",
+          }
+        ]
       }
     ]
   }
