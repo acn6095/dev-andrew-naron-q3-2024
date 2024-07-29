@@ -4,9 +4,10 @@
 
  {% javascript %}
 
- //Check for utm_medium parameter to trigger banner promo display
+
   if (window.location) {
-    //check if parameters exist
+
+     //Check for utm_medium parameter to trigger banner promo display
     if (window.location.search) {
       //declare empty array to store multiple utm_medium values
       let utmValueArray = []
@@ -29,6 +30,46 @@
         matchedBanner.classList.add('top-0')
       }
     }
+
+    //discount URLs in Shopify redirect immediately to the homepage; check for Shopify discount_cookie instead
+    //getCookie function from W3Schools
+    function getCookie(cname) {
+      let name = cname + "=";
+      let ca = document.cookie.split(';');
+      for(let i = 0; i < ca.length; i++) {
+        let c = ca[i];
+        while (c.charAt(0) == ' ') {
+          c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+          return c.substring(name.length, c.length);
+        }
+      }
+      return "";
+    }
+
+    //declare cookie variable
+    let discountCookie = getCookie("discount_code")
+
+    //only run if cookie is found
+    if (discountCookie) {
+      //declare empty array for discount cookie dataset values
+      let discountCodeValues = []
+      //push all [data-discount-code] values into empty array
+      let bannerDiscountCodes = document.querySelectorAll('[data-discount-code]')
+      bannerDiscountCodes.forEach((banner) => {
+        discountCodeValues.push(banner.dataset.discountCode)
+      })
+      //check for matching strings
+      let matchedCode = discountCodeValues.includes(`${discountCookie}`)
+      //if true, display banner
+      if(matchedCode) {
+        let matchedCodeBanner = document.querySelector(`[data-discount-code="${discountCookie}"]`)
+        matchedCodeBanner.classList.remove('-top-full')
+        matchedCodeBanner.classList.add('top-0')
+      }
+    }
+
   }
 
   //Event listener to trigger close animation on banner promo
@@ -51,7 +92,8 @@
     data-banner-promo
     data-discount-code="{{ block.settings.logic_discount_code }}"
     data-utm-medium="{{ block.settings.logic_utm_medium }}"
-    class="absolute w-full bg-[{{ block.settings.background_color }}] text-[{{ block.settings.text_color }}] transition-all duration-700 ease-in-out -top-full"
+    class="absolute w-full bg-[{{ block.settings.background_color }}] text-[{{ block.settings.text_color }}] transition-all duration-700 ease-in-out{% unless request.design_mode %} -top-full{% endunless %}"
+    {{ block.shopify_attributes }}
   >
     <div class="container mx-auto p-4 flex {{ block.settings.message_text_alignment }}">
       <span>{{ block.settings.message_text }}</span>
