@@ -6,14 +6,28 @@
 
  //Check for utm_medium parameter to trigger banner promo display
   if (window.location) {
-    const urlCurrentSearch = window.location.search
-    const urlParams = new URLSearchParams(urlCurrentSearch)
-    const utmMedium = urlParams.get('utm_medium')
-    let bannerUtmMedium = document.querySelector('[data-utm-medium]')
-    let bannerUtmValue = bannerUtmMedium.dataset.utmMedium
-    if(utmMedium == bannerUtmValue) {
-      bannerUtmMedium.classList.remove('-top-full')
-      bannerUtmMedium.classList.add('top-0')
+    //check if parameters exist
+    if (window.location.search) {
+      //declare empty array to store multiple utm_medium values
+      let utmValueArray = []
+      //get url parameter to a string
+      const urlCurrentSearch = window.location.search
+      const urlParams = new URLSearchParams(urlCurrentSearch)
+      const utmMedium = urlParams.get('utm_medium')
+      //get all banner promos
+      let bannerUtmMediums = document.querySelectorAll('[data-utm-medium]')
+      //push all [data-utm-medium] values into empty array
+      bannerUtmMediums.forEach((banner) => {
+        utmValueArray.push(banner.dataset.utmMedium)
+      })
+      //check for matching strings
+      let matchedResult = utmValueArray.includes(`${utmMedium}`)
+      //if true, display banner
+      if(matchedResult) {
+        let matchedBanner = document.querySelector(`[data-utm-medium="${utmMedium}"]`)
+        matchedBanner.classList.remove('-top-full')
+        matchedBanner.classList.add('top-0')
+      }
     }
   }
 
