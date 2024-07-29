@@ -1,10 +1,25 @@
 <!-- banner-promo section -->
 
+{% comment %} Section javascript {% endcomment %}
+
+ {% javascript %}
+    let closeButtons = document.querySelectorAll('[data-close]')
+    closeButtons.forEach((closeButton) => {
+      closeButton.addEventListener(('click'), (e) => {
+      e.preventDefault()
+      console.log('clicked')
+      closeButton.closest('[data-banner-promo]').classList.add('-top-full')
+      })
+    })
+ {% endjavascript %}
+
+{% comment %} Section styling {% endcomment %}
+
 <div
   data-banner-promo
   data-discount-code="{{ section.settings.logic_discount_code }}"
   data-utm-medium="{{ section.settings.logic_utm_medium }}"
-  class="absolute w-full bg-[{{ section.settings.background_color }}] text-[{{ section.settings.text_color }}] transition-all ease-in-out"
+  class="absolute w-full bg-[{{ section.settings.background_color }}] text-[{{ section.settings.text_color }}] transition-all duration-700 ease-in-out top-0"
 >
   <div class="container mx-auto p-4 flex {{ section.settings.message_text_alignment }}">
     <span data-success-text="{{ section.settings.success_text }}">{{ section.settings.message_text }}</span>
