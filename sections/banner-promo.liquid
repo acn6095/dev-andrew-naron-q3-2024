@@ -44,8 +44,6 @@
   //declare closed banners cookie
   let closedDiscountBanners = getCookie('closed_banners')
 
-  console.log("Closed banners cookie: " + closedDiscountBanners)
-
   let closedDiscountBannersArray = closedDiscountBanners.split(",")
 
   //declare active banner is displayed variable
@@ -56,36 +54,6 @@
 
   //declare empty variable to store cookie string for banner promos
   let activeBannerString = getCookie('active_banners')
-  console.log("Active banners cookie: " + activeBannerString)
-
-  /****** Display active banner ******/
-
-  //check that active banner cookie is not empty
-  if (activeBannerString) {
-    //split string from active cookie value
-    let activeBannerArray = activeBannerString.split(',')
-
-    //push active codes to activeCodeArray
-    activeBannerArray.forEach((item) => {
-      activeCodeArray.push(item)
-    })
-
-    //render most recently visited banner promo based on cookie
-    if (activeCodeArray !== null) {
-      let activeBanner = activeBannerArray.pop()
-      console.log('Popped active banner: ' + activeBanner)
-      let matchedActiveBanner = document.querySelector(`[data-utm-medium="${activeBanner}"]`)
-      //conditional to check for discount_code instead of utm_medium
-      if (!matchedActiveBanner) { 
-        matchedActiveBanner = document.querySelector(`[data-discount-code="${activeBanner}"]`)
-      }
-      //changes classes to display banner
-      matchedActiveBanner.classList.remove('-top-full')
-      matchedActiveBanner.classList.add('top-0')
-      //sets variable to true to prevent other banners from displaying
-      activeBannerDisplayed = true
-    }
-  }
 
   /****** URL check logic ******/
 
@@ -99,27 +67,62 @@
 
     //declare cookie variable
     let discountCookie = getCookie("discount_code")
-    console.log("discount code cookie:" + discountCookie)
     if (closedDiscountBannersArray.includes(discountCookie)) {
       discountCodeFound = false
     } else {
       discountCodeFound = discountCookie
     }
 
-    //Check for utm_medium parameter to trigger banner promo display
+    /****** Check for search parameters ******/
+    let hasSearch = false
+    let utmMediumParam = false
+    let discountCodeParam = false
+
     if (window.location.search) {
-      //declare empty array to store multiple utm_medium values
-      let utmValueArray = []
+      hasSearch = true
       //get url parameter to a string
       const urlCurrentSearch = window.location.search
       const urlParams = new URLSearchParams(urlCurrentSearch)
-      const utmMedium = urlParams.get('utm_medium')
-      const discountCodeParam = urlParams.get('discount')
-      
+      utmMediumParam = urlParams.get('utm_medium')
+      discountCodeParam = urlParams.get('discount')
+    }
+
+    /****** Display active banner ******/
+
+    //check that active banner cookie is not empty
+    if (activeBannerString) {
+      //split string from active cookie value
+      let activeBannerArray = activeBannerString.split(',')
+
+      //push active codes to activeCodeArray
+      activeBannerArray.forEach((item) => {
+        activeCodeArray.push(item)
+      })
+
+      //render most recently visited banner promo based on cookie
+      if (activeCodeArray !== null && !utmMediumParam && !discountCodeParam) {
+        let activeBanner = activeBannerArray.pop()
+        let matchedActiveBanner = document.querySelector(`[data-utm-medium="${activeBanner}"]`)
+        //conditional to check for discount_code instead of utm_medium
+        if (!matchedActiveBanner) { 
+          matchedActiveBanner = document.querySelector(`[data-discount-code="${activeBanner}"]`)
+        }
+        //changes classes to display banner
+        matchedActiveBanner.classList.remove('-top-full')
+        matchedActiveBanner.classList.add('top-0')
+        //sets variable to true to prevent other banners from displaying
+        activeBannerDisplayed = true
+      }
+    }
+    
+    if (hasSearch) {
       /****** Utm medium parameter check ******/
 
+      //declare empty array to store multiple utm_medium values
+      let utmValueArray = []
+
       //conditional to only run when utm_medium parameter is detected
-      if (utmMedium) {
+      if (utmMediumParam) {
         //get all banner promos
         let bannerUtmMediums = document.querySelectorAll('[data-utm-medium]')
         //push all [data-utm-medium] values into empty array
@@ -127,10 +130,10 @@
           utmValueArray.push(banner.dataset.utmMedium)
         })
         //check for matching strings
-        let matchedResult = utmValueArray.includes(`${utmMedium}`)
+        let matchedResult = utmValueArray.includes(`${utmMediumParam}`)
         //if true, display banner
         if (matchedResult) {
-          let matchedBanner = document.querySelector(`[data-utm-medium="${utmMedium}"]`)
+          let matchedBanner = document.querySelector(`[data-utm-medium="${utmMediumParam}"]`)
           //set values for active banner cookie
           activeCodeArray.push(matchedBanner.dataset.discountCode)
           activeCodeArray.push(matchedBanner.dataset.utmMedium)
@@ -138,6 +141,7 @@
           if (!activeBannerDisplayed) {
             matchedBanner.classList.remove('-top-full')
             matchedBanner.classList.add('top-0')
+            activeBannerDisplayed = true
           }
         }
       }
@@ -148,14 +152,12 @@
       if (discountCodeParam) {
         discountCodeFound = discountCodeParam
 
-        console.log("Before removal: " + closedDiscountBannersArray)
         //remove parameter discount code from closed banners cookie
         if (closedDiscountBannersArray.includes(discountCodeFound)) {
           closedDiscountBannersArray = closedDiscountBannersArray.filter(item => !discountCodeFound.includes(item))
         }
         //Set closed discount banner cookie
         setCookie('closed_banners', closedDiscountBannersArray)
-        console.log("After removal: " + closedDiscountBannersArray)
       }
     }
 
@@ -180,6 +182,7 @@
         if (!activeBannerDisplayed) {
           matchedCodeBanner.classList.remove('-top-full')
           matchedCodeBanner.classList.add('top-0')
+          activeBannerDisplayed = true
         }
       }
     }
