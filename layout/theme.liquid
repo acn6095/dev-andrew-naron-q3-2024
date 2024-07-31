@@ -20,7 +20,8 @@
     {{ content_for_header }}
   </head>
 
-  <body class="grid min-h-full grid-cols-[100%] grid-rows-[1fr]">
+  <body class="grid min-h-full grid-cols-[100%] grid-rows-[1fr] {% case template.name %}{% when 'index' %}bg-slate-300{% when 'product' %} bg-orange-300{% when 'collection' %}bg-sky-300{% else %}bg-lime-300{% endcase %}"
+  >
     {% section 'banner-promo' %}
     <main>
       {{ content_for_layout }}
