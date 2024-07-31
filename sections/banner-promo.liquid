@@ -2,11 +2,43 @@
 
 {% comment %} Section javascript {% endcomment %}
 
- {% javascript %}
+{% javascript %}
 
+  //functions for cookies
 
+  //setCookie function from w3schools (https://www.w3schools.com/js/js_cookies.asp)
+  function setCookie(cname, cvalue, exdays) {
+      const d = new Date()
+      d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000))
+      let expires = "expires="+d.toUTCString()
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/"
+    }
+
+  //getCookie function from w3schools (https://www.w3schools.com/js/js_cookies.asp)
+  function getCookie(cname) {
+    let name = cname + "="
+    let ca = document.cookie.split(';')
+    for(let i = 0; i < ca.length; i++) {
+      let c = ca[i]
+      while (c.charAt(0) == ' ') {
+        c = c.substring(1)
+      }
+      if (c.indexOf(name) == 0) {
+        return c.substring(name.length, c.length)
+      }
+    }
+    return ""
+  }
+
+  //declare active banner is displayed variable
+  let activeBannerDisplayed = false
+  console.log(activeBannerDisplayed)
+
+  //declare empty array for banner promos to be added to cookie
+  let activeCodeArray = []
+
+  //check URL
   if (window.location) {
-
      //Check for utm_medium parameter to trigger banner promo display
     if (window.location.search) {
       //declare empty array to store multiple utm_medium values
@@ -15,38 +47,32 @@
       const urlCurrentSearch = window.location.search
       const urlParams = new URLSearchParams(urlCurrentSearch)
       const utmMedium = urlParams.get('utm_medium')
-      //get all banner promos
-      let bannerUtmMediums = document.querySelectorAll('[data-utm-medium]')
-      //push all [data-utm-medium] values into empty array
-      bannerUtmMediums.forEach((banner) => {
-        utmValueArray.push(banner.dataset.utmMedium)
-      })
-      //check for matching strings
-      let matchedResult = utmValueArray.includes(`${utmMedium}`)
-      //if true, display banner
-      if(matchedResult) {
-        let matchedBanner = document.querySelector(`[data-utm-medium="${utmMedium}"]`)
-        matchedBanner.classList.remove('-top-full')
-        matchedBanner.classList.add('top-0')
+      //conditional to only run when utm_medium parameter is detected
+      if (utmMedium) {
+        //get all banner promos
+        let bannerUtmMediums = document.querySelectorAll('[data-utm-medium]')
+        //push all [data-utm-medium] values into empty array
+        bannerUtmMediums.forEach((banner) => {
+          utmValueArray.push(banner.dataset.utmMedium)
+        })
+        //check for matching strings
+        let matchedResult = utmValueArray.includes(`${utmMedium}`)
+        //if true, display banner
+        if (matchedResult) {
+          let matchedBanner = document.querySelector(`[data-utm-medium="${utmMedium}"]`)
+          //set values for active banner cookie
+          activeCodeArray.push(matchedBanner.dataset.discountCode)
+          activeCodeArray.push(matchedBanner.dataset.utmMedium)
+          //change classes to display banner
+          if(!activeBannerDisplayed) {
+            matchedBanner.classList.remove('-top-full')
+            matchedBanner.classList.add('top-0')
+          }
+        }
       }
     }
 
-    //discount URLs in Shopify redirect immediately to the homepage; check for Shopify discount_cookie instead
-    //getCookie function from W3Schools
-    function getCookie(cname) {
-      let name = cname + "=";
-      let ca = document.cookie.split(';');
-      for(let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0) == ' ') {
-          c = c.substring(1);
-        }
-        if (c.indexOf(name) == 0) {
-          return c.substring(name.length, c.length);
-        }
-      }
-      return "";
-    }
+    //discount URLs in Shopify redirect immediately to the homepage; check for Shopify discount_cookie cookie instead
 
     //declare cookie variable
     let discountCookie = getCookie("discount_code")
@@ -65,24 +91,80 @@
       //if true, display banner
       if(matchedCode) {
         let matchedCodeBanner = document.querySelector(`[data-discount-code="${discountCookie}"]`)
-        matchedCodeBanner.classList.remove('-top-full')
-        matchedCodeBanner.classList.add('top-0')
+        //set values for active banner cookie
+        activeCodeArray.push(matchedCodeBanner.dataset.discountCode)
+        activeCodeArray.push(matchedCodeBanner.dataset.utmMedium)
+        //change classes to display banner
+        if(!activeBannerDisplayed) {
+          matchedCodeBanner.classList.remove('-top-full')
+          matchedCodeBanner.classList.add('top-0')
+        }
       }
     }
-
   }
 
-  //Event listener to trigger close animation on banner promo
-    let closeButtons = document.querySelectorAll('[data-close]')
+    console.log(activeCodeArray)
+
+    //declare empty variable to store cookie string for banner promos
+  let activeBannerString = getCookie('active_banners')
+  console.log(activeBannerString)
+  //check that cookie is not empty
+  if (activeBannerString) {
+    //split string from active cookie 
+    let activeBannerArray = activeBannerString.split(',')
+
+    //push active codes to activeCodeArray
+    activeBannerArray.forEach((item) => {
+      activeCodeArray.push(item)
+    })
+
+    console.log(activeCodeArray)
+
+    //render most recently visited banner promo based on cookie
+    if (activeCodeArray !== null) {
+      let activeUtmMedium = activeBannerArray.pop()
+      let matchedActiveBanner = document.querySelector(`[data-utm-medium="${activeUtmMedium}"]`)
+      matchedActiveBanner.classList.remove('-top-full')
+      matchedActiveBanner.classList.add('top-0')
+      activeBannerDisplayed = true
+      console.log(activeBannerDisplayed)
+    }
+
+    console.log('active banners:' + activeBannerString)
+  }
+
+    //clean active banner promo value array of duplicates
+    let cleanedArray = [...new Set(activeCodeArray)]
+
+    //Set active banner promo cookie
+    setCookie('active_banners', cleanedArray)
+
+    console.log(getCookie('active_banners'))
+
+      //Event listener to trigger close animation on banner promo
+      let closeButtons = document.querySelectorAll('[data-close]')
     closeButtons.forEach((closeButton) => {
       closeButton.addEventListener(('click'), (e) => {
       e.preventDefault()
       let parentBanner = closeButton.closest('[data-banner-promo]')
       parentBanner.classList.remove('top-0')
       parentBanner.classList.add('-top-full')
+      //remove closed values from active promo array
+        let discountCodeRemoved = parentBanner.dataset.discountCode
+        let utmMediumRemoved = parentBanner.dataset.utmMedium
+        console.log(cleanedArray)
+        let valuesRemoved = [discountCodeRemoved,utmMediumRemoved]
+        console.log(valuesRemoved)
+        let removedArray = cleanedArray.filter((item) => {
+            return !valuesRemoved.includes(item)
+        })
+        console.log(removedArray)
+        //Set active banner promo cookie
+        setCookie('active_banners', removedArray)
+        //Update cleanedArray
+        cleanedArray = removedArray
       })
     })
-
  {% endjavascript %}
 
 {% comment %} Section styling {% endcomment %}
