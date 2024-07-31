@@ -9,6 +9,8 @@
     1. discount parameter
     2. utm_medium parameter
     3. discount pathname; Shopify immediately redirects the user on page arrival; code checks Shopify's discount_code cookie instead
+
+    When a banner is closed, the closed banner will not display again unless the user navigates to a URL with a matching discount or utm_medium parameter.
   */
 
   /****** Cookie functions ******/
@@ -42,6 +44,8 @@
   //declare closed banners cookie
   let closedDiscountBanners = getCookie('closed_banners')
 
+  console.log("Closed banners cookie: " + closedDiscountBanners)
+
   let closedDiscountBannersArray = closedDiscountBanners.split(",")
 
   //declare active banner is displayed variable
@@ -52,6 +56,7 @@
 
   //declare empty variable to store cookie string for banner promos
   let activeBannerString = getCookie('active_banners')
+  console.log("Active banners cookie: " + activeBannerString)
 
   /****** Display active banner ******/
 
@@ -68,6 +73,7 @@
     //render most recently visited banner promo based on cookie
     if (activeCodeArray !== null) {
       let activeBanner = activeBannerArray.pop()
+      console.log('Popped active banner: ' + activeBanner)
       let matchedActiveBanner = document.querySelector(`[data-utm-medium="${activeBanner}"]`)
       //conditional to check for discount_code instead of utm_medium
       if (!matchedActiveBanner) { 
@@ -93,6 +99,7 @@
 
     //declare cookie variable
     let discountCookie = getCookie("discount_code")
+    console.log("discount code cookie:" + discountCookie)
     if (closedDiscountBannersArray.includes(discountCookie)) {
       discountCodeFound = false
     } else {
@@ -106,10 +113,11 @@
       //get url parameter to a string
       const urlCurrentSearch = window.location.search
       const urlParams = new URLSearchParams(urlCurrentSearch)
-
+      const utmMedium = urlParams.get('utm_medium')
+      const discountCodeParam = urlParams.get('discount')
+      
       /****** Utm medium parameter check ******/
 
-      const utmMedium = urlParams.get('utm_medium')
       //conditional to only run when utm_medium parameter is detected
       if (utmMedium) {
         //get all banner promos
@@ -137,13 +145,17 @@
       /****** Discount code parameter check ******/
 
       //check for discount URL parameter
-      let discountCodeParam = urlParams.get('discount')
       if (discountCodeParam) {
         discountCodeFound = discountCodeParam
+
+        console.log("Before removal: " + closedDiscountBannersArray)
         //remove parameter discount code from closed banners cookie
         if (closedDiscountBannersArray.includes(discountCodeFound)) {
           closedDiscountBannersArray = closedDiscountBannersArray.filter(item => !discountCodeFound.includes(item))
         }
+        //Set closed discount banner cookie
+        setCookie('closed_banners', closedDiscountBannersArray)
+        console.log("After removal: " + closedDiscountBannersArray)
       }
     }
 
