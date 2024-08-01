@@ -1,6 +1,57 @@
+/*
+* ------------------------------------------------------------
+* IMPORTANT: The contents of this file are auto-generated.
+*
+* This file may be updated by the Shopify admin theme editor
+* or related systems. Please exercise caution as any changes
+* made to this file may be overwritten.
+* ------------------------------------------------------------
+*/
 {
-  "current": "Default",
+  "current": {
+    "sections": {
+      "banner-promo": {
+        "type": "banner-promo",
+        "blocks": {
+          "promo_yThtii": {
+            "type": "promo",
+            "settings": {
+              "background_color": "#2f73da",
+              "text_color": "#ffffff",
+              "message_text": "Your 15% off discount code WELCOME will auto-apply at checkout.",
+              "button_text": "close",
+              "message_text_alignment": "justify-between",
+              "logic_utm_medium": "welcome",
+              "logic_discount_code": "WELCOME"
+            }
+          },
+          "promo_m6NUWD": {
+            "type": "promo",
+            "settings": {
+              "background_color": "#5928ed",
+              "text_color": "#ffffff",
+              "message_text": "Your 10% off discount code DEAL10 will auto-apply at checkout.",
+              "button_text": "close",
+              "message_text_alignment": "justify-end",
+              "logic_utm_medium": "deal10",
+              "logic_discount_code": "DEAL10"
+            }
+          }
+        },
+        "block_order": [
+          "promo_yThtii",
+          "promo_m6NUWD"
+        ],
+        "settings": {
+        }
+      }
+    },
+    "content_for_index": [
+
+    ]
+  },
   "presets": {
-    "Default": {}
+    "Default": {
+    }
   }
 }
